@@ -9,7 +9,7 @@ if (ALiVE_randomGen_debugEnabled)
 // Virtual AI System
 
 
-ALiVE_fnc_randomGenLoadALiVECore();
+ALiVE_randomGenLoadAliveCore();
 
 progressLoadingScreen(0.2);
 
@@ -20,7 +20,7 @@ if (ALiVE_randomGen_debugEnabled)
 // load clusters
 
 CBA_fnc_directCall(function() {
-    ALiVE_fnc_randomGenLoadClusters();
+    ALiVE_randomGenLoadClusters();
 
     progressLoadingScreen(0.4);
 
@@ -32,9 +32,9 @@ CBA_fnc_directCall(function() {
 
 
 var _taorData = CBA_fnc_directCall(function() {
-    var _startPoints = ALiVE_fnc_randomGenGenerateStartPoints();
-    var _taors = ALiVE_fnc_randomGenGenerateTAORs(_startPoints);
-    var _taorMarkers = ALiVE_fnc_randomGengenerateTAORMarkers(_taors);
+    var _startPoints = ALiVE_randomGenGenerateStartPoints();
+    var _taors = ALiVE_randomGenGenerateTAORs(_startPoints);
+    var _taorMarkers = ALiVE_randomGenGenerateTAORMarkers(_taors);
 
     progressLoadingScreen(0.5);
 
@@ -43,60 +43,86 @@ var _taorData = CBA_fnc_directCall(function() {
 
     return [_startPoints,_taors,_taorMarkers];
 }, []);
-/*
+
 
 // create placement modules
 
 
-private _placementModules = [{
-    _taorMarkers = _taorData select 2;
+var _placementModules = CBA_fnc_directCall(function() {
+    var _taorMarkers = select(_taorData,2);
 
-    _taorMarkers params ["_taorList1","_taorList2"];
+    params(_taorMarkers, ["_taorList1","_taorList2"]);
 
-    private _milPlacement1 = [false, _taorList1, [], 100, 0, true, "BLU_F", 400, "Random", true, true, true, true, 0.5, "None", 0.75] call ALiVE_fnc_randomGenCreateMilPlacement;
-    private _milPlacement2 = [false, _taorList2, [], 100, 0, true, "OPF_F", 400, "Random", true, true, true, true, 0.5, "None", 0.75] call ALiVE_fnc_randomGenCreateMilPlacement;
+    var _milPlacement1 = new ALiVE_mil_placement();
+    _milPlacement1.taors = _taorList1;
+    _milPlacement1.faction = "BLU_F";
+    _milPlacement1.unitCount = 400;
+    _milPlacement1.ambientVehicleModifier = 0.5;
 
-    [_milPlacement1, true] call ALiVE_fnc_randomGenInitModule;
-    [_milPlacement2, true] call ALiVE_fnc_randomGenInitModule;
+    var _milPlacement2 = new ALiVE_mil_placement();
+    _milPlacement2.taors = _taorList2;
+    _milPlacement2.faction = "OPF_F";
+    _milPlacement2.unitCount = 400;
+    _milPlacement2.ambientVehicleModifier = 0.5;
 
-    private _civPlacement1 = [false, _taorList1, [], "ALL", 250, 0, true, "BLU_F", 400, "Random", true, true, true, true, 0.5, "None", 0.75, 0, 1] call ALiVE_fnc_randomGenCreateCivPlacement;
-    private _civPlacement2 = [false, _taorList2, [], "ALL", 250, 0, true, "OPF_F", 400, "Random", true, true, true, true, 0.5, "None", 0.75, 0, 1] call ALiVE_fnc_randomGenCreateCivPlacement;
+    _milPlacement1.initialize();
+    _milPlacement2.initialize();
 
-    [_civPlacement1, true] call ALiVE_fnc_randomGenInitModule;
-    [_civPlacement2, true] call ALiVE_fnc_randomGenInitModule;
+    var _civPlacement1 = new ALiVE_civ_placement();
+    _civPlacement1.taors = _taorList1;
+    _civPlacement1.faction = "BLU_F";
+    _civPlacement1.unitCount = 400;
+    _civPlacement1.seaPatrolsLevel = 0.8;
 
-    if (ALiVE_randomGen_debugEnabled) then {
-        //{_x setmarkeralpha 0.3} foreach _taorList1;
-        //{_x setmarkeralpha 0.3} foreach _taorList2;
+    var _civPlacement2 = new ALiVE_civ_placement();
+    _civPlacement2.taors = _taorList2;
+    _civPlacement2.faction = "OPC_F";
+    _civPlacement2.unitCount = 400;
+    _civPlacement2.seaPatrolsLevel = 0.8;
 
-        diag_log format ["ALiVE_randomGen - Placement Modules Created"];
+    _civPlacement1.initialize();
+    _civPlacement2.initialize();
+
+    if (ALiVE_randomGen_debugEnabled) {
+        //for(var _marker : _taorList1) setmarkeralpha(_marker, 0.3);
+        //for(var _marker : _taorList2) setmarkeralpha(_marker, 0.3);
+
+        diag_log(format(["ALiVE_randomGen - Placement Modules Created"]));
     };
 
-    progressLoadingScreen 0.7;
+    progressLoadingScreen(0.7);
 
-    [[_civPlacement1,_milPlacement1],[_civPlacement2,_milPlacement2]]
-}, []] call CBA_fnc_directCall;
+    return [[_civPlacement1,_milPlacement1],[_civPlacement2,_milPlacement2]];
+}, []);
 
 
 // create opcoms
 
 
-_placementModules params ["_placementModulesTeam1","_placementModulesTeam2"];
+params(_placementModules, ["_placementModulesTeam1","_placementModulesTeam2"]);
 
-private _allPlacementModules = _placementModulesTeam1 + _placementModulesTeam2;
+var _allPlacementModules = _placementModulesTeam1 + _placementModulesTeam2;
 
-private _opcom1 = [ALiVE_randomGen_debugEnabled, "invasion", ["BLU_F"]] call ALiVE_fnc_randomGenCreateOPCOM;
-[_opcom1, _allPlacementModules] call ALiVE_fnc_randomGenSyncToModule;
+var _opcom1 = new ALiVE_mil_opcom();
+_opcom1.controlType = "invasion";
+_opcom1.factions = ["BLU_F"];
 
-private _opcom2 = [ALiVE_randomGen_debugEnabled, "invasion", ["OPF_F"]] call ALiVE_fnc_randomGenCreateOPCOM;
-[_opcom2, _allPlacementModules] call ALiVE_fnc_randomGenSyncToModule;
+var _opcom2 = new ALiVE_mil_opcom();
+_opcom2.controlType = "invasion";
+_opcom2.factions = ["OPF_F"];
 
-[_opcom1] call ALiVE_fnc_randomGenInitModule;
-[_opcom2] call ALiVE_fnc_randomGenInitModule;
+_opcom1.initialize();
+_opcom2.initialize();
 
-waituntil {(_opcom1 getvariable ["startupComplete", false]) && (_opcom2 getvariable ["startupComplete", false])};
+_opcom1.syncTo(apply(_allPlacementModules, function(){ _x.moduleObject; }));
+_opcom2.syncTo(apply(_allPlacementModules, function(){ _x.moduleObject; }));
 
-
+waituntil(function() {
+    getvariable(_opcom1.moduleObject, ["startupComplete", false])
+    &&
+    getvariable(_opcom2.moduleObject, ["startupComplete", false]);
+});
+/*
 // create C2ISTAR
 
 private _c2istar = [

@@ -25,4 +25,4 @@ var _createTAORMarkers = function(Array _taorSectors, String _markerColor) {
 var _teamOneTAOR = _createTAORMarkers(_taorSectors1,"ColorBlue");
 var _teamTwoTAOR = _createTAORMarkers(_taorSectors2,"ColorRed");
 
-return [_taorSectors2, _teamOneTAOR,_teamTwoTAOR];
+return [_teamOneTAOR,_teamTwoTAOR];

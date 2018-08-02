@@ -1,0 +1,3 @@
+params(["_targetModule","_toSync"]);
+
+synchronizeObjectsAdd(_targetModule,_toSync);
