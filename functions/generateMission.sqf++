@@ -1,7 +1,7 @@
-startLoadingScreen ["ALiVE - Randomly Generating Mission..."];
-if (ALiVE_randomGen_debugEnabled) then {
-    diag_log format ["ALiVE_randomGen - Starting Mission Generation"];
-};
+startLoadingScreen(["ALiVE - Randomly Generating Mission..."]);
+
+if (ALiVE_randomGen_debugEnabled)
+    diag_log(format(["ALiVE_randomGen - Starting Mission Generation"]));
 
 
 // load core modules
@@ -9,42 +9,41 @@ if (ALiVE_randomGen_debugEnabled) then {
 // Virtual AI System
 
 
-[] call ALiVE_fnc_randomGenLoadALiVECore;
-progressLoadingScreen 0.2;
-if (ALiVE_randomGen_debugEnabled) then {
-    diag_log format ["ALiVE_randomGen - ALiVE Core Loaded"];
-};
+ALiVE_fnc_randomGenLoadALiVECore();
+
+progressLoadingScreen(0.2);
+
+if (ALiVE_randomGen_debugEnabled)
+    diag_log(format(["ALiVE_randomGen - ALiVE Core Loaded"]));
 
 
 // load clusters
 
+CBA_fnc_directCall(function() {
+    ALiVE_fnc_randomGenLoadClusters();
 
-[{
-    [] call ALiVE_fnc_randomGenLoadClusters;
+    progressLoadingScreen(0.4);
 
-    progressLoadingScreen 0.4;
-    if (ALiVE_randomGen_debugEnabled) then {
-        diag_log format ["ALiVE_randomGen - Clusters Loaded"];
-    };
-}, []] call CBA_fnc_directCall;
-
+    if (ALiVE_randomGen_debugEnabled)
+        diag_log(format(["ALiVE_randomGen - Clusters Loaded"]));
+}, []);
 
 // generate taors
 
 
-private _taorData = [{
-    private _startPoints = [] call ALiVE_fnc_randomGenGenerateStartPoints;
-    private _taors = [_startPoints] call ALiVE_fnc_randomGenGenerateTAORs;
-    private _taorMarkers = [_taors] call ALiVE_fnc_randomGengenerateTAORMarkers;
+var _taorData = CBA_fnc_directCall(function() {
+    var _startPoints = ALiVE_fnc_randomGenGenerateStartPoints();
+    var _taors = ALiVE_fnc_randomGenGenerateTAORs(_startPoints);
+    var _taorMarkers = ALiVE_fnc_randomGengenerateTAORMarkers(_taors);
 
-    progressLoadingScreen 0.5;
-    if (ALiVE_randomGen_debugEnabled) then {
-        diag_log format ["ALiVE_randomGen - Generating Start Points and TAOR"];
-    };
+    progressLoadingScreen(0.5);
 
-    [_startPoints,_taors,_taorMarkers]
-}, []] call CBA_fnc_directCall;
+    if (ALiVE_randomGen_debugEnabled)
+        diag_log(format(["ALiVE_randomGen - Generating Start Points and TAOR"]));
 
+    return [_startPoints,_taors,_taorMarkers];
+}, []);
+/*
 
 // create placement modules
 
@@ -115,4 +114,6 @@ private _c2istar = [
 if (ALiVE_randomGen_debugEnabled) then {
     diag_log format ["ALiVE_randomGen - Mission Generation Complete"];
 };
-endLoadingScreen;
+*/
+
+endLoadingScreen();

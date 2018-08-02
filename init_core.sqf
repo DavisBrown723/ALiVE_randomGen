@@ -22,13 +22,13 @@ ALiVE_fnc_randomGenCreateVirtualAISystem = compile preprocessFileLineNumbers "AL
 ALiVE_fnc_randomGenInitModule = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\modules\initModule.sqf";
 ALiVE_fnc_randomGenSyncToModule = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\modules\syncToModule.sqf";
 
-ALiVE_fnc_randomGenArrayToStringList = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\arrayToStringList.sqf";
-ALiVE_fnc_randomGenGenerateMission = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\generateMission.sqf";
-ALiVE_fnc_randomGenGenerateStartPoints = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\generateStartPoints.sqf";
-ALiVE_fnc_randomGenGenerateTAORMarkers = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\generateTAORMarkers.sqf";
-ALiVE_fnc_randomGenGenerateTAORs = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\generateTAORs.sqf";
-ALiVE_fnc_randomGenLoadAliveCore = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\loadAliveCore.sqf";
-ALiVE_fnc_randomGenLoadClusters = compile preprocessFileLineNumbers "ALiVE_randomGen\functions\loadClusters.sqf";
+ALiVE_fnc_randomGenArrayToStringList = ["ALiVE_randomGen\functions\arrayToStringList.sqf++"] call generateCode;
+ALiVE_fnc_randomGenGenerateMission = ["ALiVE_randomGen\functions\generateMission.sqf++"] call generateCode;
+ALiVE_fnc_randomGenGenerateStartPoints = ["ALiVE_randomGen\functions\generateStartPoints.sqf++"] call generateCode;
+ALiVE_fnc_randomGenGenerateTAORMarkers = ["ALiVE_randomGen\functions\generateTAORMarkers.sqf++"] call generateCode;
+ALiVE_fnc_randomGenGenerateTAORs = ["ALiVE_randomGen\functions\generateTAORs.sqf++"] call generateCode;
+ALiVE_fnc_randomGenLoadAliveCore = ["ALiVE_randomGen\functions\loadAliveCore.sqf++"] call generateCode;
+ALiVE_fnc_randomGenLoadClusters = ["ALiVE_randomGen\functions\loadClusters.sqf++"] call generateCode;
 
 // generate mission
 

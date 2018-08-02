@@ -1,0 +1,13 @@
+var _requiredModule = ALiVE_fnc_randomGenCreateRequired(ALiVE_randomGen_debugEnabled);
+var _virtualAISystem = ALiVE_fnc_randomGenCreateVirtualAISystem(ALiVE_randomGen_debugEnabled);
+
+ALiVE_fnc_randomGenInitModule(_requiredModule);
+ALiVE_fnc_randomGenInitModule(_virtualAISystem);
+
+waituntil(function() {
+    !isnil("ALiVE_REQUIRE_INITIALISED");
+});
+
+waituntil(function() {
+    !(isnil("ALiVE_profileSystemInit"));
+});
