@@ -1,5 +1,7 @@
 params [
-    ["_debugEnabled", false, [false]]
+    ["_debugEnabled", false, [false]],
+    ["_faction1", "BLU_F", [""]],
+    ["_faction2", "OPF_F", [""]]
 ];
 
 if (!isnil "ALiVE_randomGenCoreInitStarted" && {!ALiVE_randomGenCoreInitStarted}) exitwith {
@@ -32,4 +34,4 @@ ALiVE_randomGenLoadClusters = ["ALiVE_randomGen\functions\loadClusters.sqf++"] c
 
 // generate mission
 
-call ALiVE_randomGenGenerateMission;
+[_faction1,_faction2] call ALiVE_randomGenGenerateMission;
