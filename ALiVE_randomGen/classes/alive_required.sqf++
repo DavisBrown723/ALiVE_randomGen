@@ -1,0 +1,35 @@
+class ALiVE_Required : Module {
+
+    var debug = false;
+    var versioning = "warning";
+    var aiDistribution = false;
+    var disableSave = true;
+    var disableMarkers = false;
+    var disableAdminActions = false;
+    var pauseModules = false;
+    var tabletModel = "Tablet01";
+
+    var garbageCollector = objnull();
+
+
+    function constructor() {
+        this.garbageCollector = new ALiVE_Garbage_Collector();
+    }
+
+    function initialize() {
+        this.ModuleInit("ALiVE_require");
+
+        setvariable(this.moduleObject, ["debug", str(this.debug)]);
+        setvariable(this.moduleObject, ["ALiVE_Versioning", this.versioning]);
+        setvariable(this.moduleObject, ["ALiVE_AI_DISTRIBUTION", str(this.aiDistribution)]);
+        setvariable(this.moduleObject, ["ALiVE_DISABLESAVE", str(this.disableSave)]);
+        setvariable(this.moduleObject, ["ALiVE_DISABLEMARKERS", this.disableMarkers]);
+        setvariable(this.moduleObject, ["ALiVE_DISABLEADMINACTIONS", this.disableAdminActions]);
+        setvariable(this.moduleObject, ["ALiVE_PAUSEMODULES", this.pauseModules]);
+        setvariable(this.moduleObject, ["ALiVE_GC_INTERVAL", str(this.garbageCollector.interval)]);
+        setvariable(this.moduleObject, ["ALiVE_GC_THRESHHOLD", str(this.garbageCollector.threshhold)]);
+        setvariable(this.moduleObject, ["ALiVE_GC_INDIVIDUALTYPES", str(this.garbageCollector.individualTypes)]);
+        setvariable(this.moduleObject, ["ALiVE_TABLET_MODEL", this.tabletModel]);
+    }
+
+}

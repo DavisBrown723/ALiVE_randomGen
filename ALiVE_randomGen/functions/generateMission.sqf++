@@ -1,0 +1,207 @@
+/*
+
+    #TODO: Refactor
+
+*/
+
+params(["_faction1","_faction2"]);
+
+startLoadingScreen(["ALiVE - Randomly Generating Mission..."]);
+
+if (ALiVE_randomGen_debugEnabled)
+    diag_log(format(["ALiVE_randomGen - Starting Mission Generation"]));
+
+
+// load core modules
+// ALiVE required
+// Virtual AI System
+{
+    ALiVE_randomGenLoadAliveCore();
+
+    progressLoadingScreen(0.2);
+
+    if (ALiVE_randomGen_debugEnabled)
+        diag_log(format(["ALiVE_randomGen - ALiVE Core Loaded"]));
+}
+
+// load clusters
+
+CBA_fnc_directCall(function() {
+    ALiVE_randomGenLoadClusters();
+
+    progressLoadingScreen(0.4);
+
+    if (ALiVE_randomGen_debugEnabled)
+        diag_log(format(["ALiVE_randomGen - Clusters Loaded"]));
+}, []);
+
+// generate taors
+
+
+var _taorData = CBA_fnc_directCall(function() {
+    var _startPoints = ALiVE_randomGenGenerateStartPoints();
+    var _taors = ALiVE_randomGenGenerateTAORs(_startPoints);
+    var _taorMarkers = ALiVE_randomGenGenerateTAORMarkers(_taors);
+
+    progressLoadingScreen(0.5);
+
+    if (ALiVE_randomGen_debugEnabled)
+        diag_log(format(["ALiVE_randomGen - Generating Start Points and TAOR"]));
+
+    return [_startPoints,_taors,_taorMarkers];
+}, []);
+
+
+// create placement modules
+
+
+var _placementModules = CBA_fnc_directCall(function() {
+    var _taorMarkers = select(_taorData,2);
+
+    params(_taorMarkers, ["_taorList1","_taorList2"]);
+
+    var _milPlacement1 = new ALiVE_mil_placement();
+    _milPlacement1.taors = _taorList1;
+    _milPlacement1.faction = _faction1;
+    _milPlacement1.unitCount = 400;
+    _milPlacement1.ambientVehicleModifier = 0.5;
+
+    var _milPlacement2 = new ALiVE_mil_placement();
+    _milPlacement2.taors = _taorList2;
+    _milPlacement2.faction = _faction2;
+    _milPlacement2.unitCount = 400;
+    _milPlacement2.ambientVehicleModifier = 0.5;
+
+    _milPlacement1.initialize();
+    _milPlacement2.initialize();
+
+    var _civPlacement1 = new ALiVE_civ_placement();
+    _civPlacement1.taors = _taorList1;
+    _civPlacement1.faction = _faction1;
+    _civPlacement1.unitCount = 400;
+    _civPlacement1.seaPatrolsLevel = 0.8;
+
+    var _civPlacement2 = new ALiVE_civ_placement();
+    _civPlacement2.taors = _taorList2;
+    _civPlacement2.faction = _faction2;
+    _civPlacement2.unitCount = 400;
+    _civPlacement2.seaPatrolsLevel = 0.8;
+
+    _civPlacement1.initialize();
+    _civPlacement2.initialize();
+
+    if (ALiVE_randomGen_debugEnabled) {
+        //for(var _marker : _taorList1) setmarkeralpha(_marker, 0.3);
+        //for(var _marker : _taorList2) setmarkeralpha(_marker, 0.3);
+
+        diag_log(format(["ALiVE_randomGen - Placement Modules Created"]));
+    };
+
+    progressLoadingScreen(0.7);
+
+    return [[_civPlacement1,_milPlacement1],[_civPlacement2,_milPlacement2]];
+}, []);
+
+
+// create opcoms
+{
+    params(_placementModules, ["_placementModulesTeam1","_placementModulesTeam2"]);
+
+    var _allPlacementModules = _placementModulesTeam1 + _placementModulesTeam2;
+
+    var _opcom1 = new ALiVE_mil_opcom();
+    _opcom1.controlType = "invasion";
+    _opcom1.factions = [_faction1];
+
+    var _opcom2 = new ALiVE_mil_opcom();
+    _opcom2.controlType = "invasion";
+    _opcom2.factions = [_faction2];
+
+    // run initialization in unscheduled
+    // to ensure modules get synced before
+    // opcom init function is executed
+    CBA_fnc_directCall(function() {
+        _opcom1.initialize();
+        _opcom2.initialize();
+
+        _opcom1.syncTo(apply(_allPlacementModules, function(){ _x.moduleObject; }));
+        _opcom2.syncTo(apply(_allPlacementModules, function(){ _x.moduleObject; }));
+    }, []);
+
+    waituntil(function() {
+        getvariable(_opcom1.moduleObject, ["startupComplete", false])
+        &&
+        getvariable(_opcom2.moduleObject, ["startupComplete", false]);
+    });
+
+    progressLoadingScreen(0.9);
+}
+
+// create C2ISTAR
+{
+    var _c2istar = new ALiVE_mil_c2istar();
+    _c2istar.requiredItem = "ItemRadio";
+
+    _c2istar.blueforTasksGeneration = "Strategic";
+    _c2istar.blueforTasksFaction = _faction1;
+    _c2istar.blueforTasksEnemyFaction = _faction2;
+
+    _c2istar.opforTasksGeneration = "Strategic";
+    _c2istar.opforTasksFaction = _faction2;
+    _c2istar.opforTasksEnemyFaction = _faction1;
+
+    _c2istar.displayMapIntel = true;
+    _c2istar.mapIntelChance = 1;
+    _c2istar.displayFriendlyIntel = true;
+    _c2istar.friendlyIntelRadius = 2000;
+    _c2istar.displayMilitarySectors = true;
+    _c2istar.intelRefreshRate = 0.5;
+
+    _c2istar.initialize();
+}
+
+
+if (ALiVE_randomGen_debugEnabled)
+    diag_log(format(["ALiVE_randomGen - Mission Generation Complete"]));
+
+// mission generation complete
+// now lets move players to a suitable spawn point
+
+{
+    var _startPoints = select(_taorData,0);
+
+    var _bluforStartSector = select(_startPoints,0);
+    var _sectorData = ALiVE_fnc_hashGet(_bluforStartSector,"data");
+    var _milClustersByType = ALiVE_fnc_hashGet(_sectorData,"clustersMil");
+    var _milClusters = ALiVE_fnc_hashGet(_milClustersByType,"consolidated");
+
+    var _startClusterData = selectrandom(_milClusters);
+
+    var _clusterID = select(_startClusterData,1);
+    var _cluster = ALiVE_fnc_hashGet(ALiVE_clustersMil,_clusterID);
+    var _clusterPos = ALiVE_fnc_hashGet(_cluster,"center");
+    var _clusterSize = ALiVE_fnc_hashGet(_cluster,"size");
+
+    var _emptyPosition = BIS_fnc_findSafePos(_clusterPos,0, _clusterSize * 0.50, 5, 0, 2, 0, [], _clusterPos);
+    if (count(_emptyPosition) == 2) pushback(_emptyPosition,0);
+
+    // add noise to start position to
+    // prevent players stacked on top of eachother
+
+    for(var _player : allplayers())
+        setPos(_player, vectoradd(_emptyPosition, [random([0,1,2]), random([0,1,2]), 0]));
+
+    // create respawn point
+
+    var _respawnMarker = "respawn_west";
+    deletemarker(_respawnMarker);
+    createmarker([_respawnMarker,_emptyPosition]);
+
+    // Add ammo crate with arsenal
+
+    var _ammoCrate = createvehicle("B_supplyCrate_F", vectorAdd(_emptyPosition,[0,3,0]));
+    allowdamage(_ammoCrate,false);
+    addaction(_ammoCrate, ["Open Arsenal", function() { BIS_fnc_arsenal(["Open",true]); }]);
+}
+
+endLoadingScreen();

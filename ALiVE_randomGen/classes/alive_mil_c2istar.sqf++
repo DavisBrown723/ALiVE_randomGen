@@ -1,0 +1,76 @@
+class ALiVE_mil_c2istar : Module {
+
+    var debug = false;
+    var requiredItem = "LaserDesignator";
+    var persistent = false;
+
+    var blueforTasksGeneration = "None";
+    var blueforTasksFaction = "BLU_F";
+    var blueforTasksEnemyFaction = "OPF_F";
+
+    var opforTasksGeneration = "None";
+    var opforTasksFaction = "OPF_F";
+    var opforTasksEnemyFaction = "BLU_F";
+
+    var indforTasksGeneration = "None";
+    var indforTasksFaction = "IND_F";
+    var indforTasksEnemyFaction = "OPF_F";
+
+    var groupManagementLimit = "Side";
+
+    var commanderOptionsLimit = "SIDE";
+    var commanderOptionsAllowSpectate = true;
+    var commanderOptionsAllowInstantJoin = true;
+    var commanderOptionsIntelLimit = "SIDE";
+
+    var displayMapIntel = false;
+    var mapIntelChance = 1;
+    var displayFriendlyIntel = false;
+    var friendlyIntelRadius = 2000;
+    var displayMilitarySectors = false;
+    var TRACEGridDisplayLevel = "NONE";
+    var displayPlayerSectors = false;
+    var intelRefreshRate = 2;
+
+
+    function constructor() {
+
+    }
+
+    function initialize() {
+        this.ModuleInit("ALiVE_mil_c2istar");
+
+        this.setVar("debug",                            this.debug);
+        this.setVar("c2_item",                          this.requiredItem);
+        this.setVar("persistent",                       this.persistent);
+
+        this.setVar("autoGenerateBlufor",               this.blueforTasksGeneration);
+        this.setVar("autoGenerateBluforFaction",        this.blueforTasksFaction);
+        this.setVar("autoGenerateBluforEnemyFaction",   this.blueforTasksEnemyFaction);
+
+        this.setVar("autoGenerateOpfor",                this.opforTasksGeneration);
+        this.setVar("autoGenerateOpforFaction",         this.opforTasksFaction);
+        this.setVar("autoGenerateOpforEnemyFaction",    this.opforTasksEnemyFaction);
+
+        this.setVar("autoGenerateIndfor",               this.indforTasksGeneration);
+        this.setVar("autoGenerateIndforFaction",        this.indforTasksFaction);
+        this.setVar("autoGenerateIndforEnemyFaction",   this.indforTasksEnemyFaction);
+
+        this.setVar("gmLimit",                          this.groupManagementLimit);
+
+        this.setVar("scomOpsLimit",                     this.commanderOptionsLimit);
+        this.setVar("scomOpsAllowSpectate",             this.commanderOptionsAllowSpectate);
+        this.setVar("scomOpsAllowInstantJoin",          this.commanderOptionsAllowInstantJoin);
+        this.setVar("scomIntelLimit",                   this.commanderOptionsIntelLimit);
+
+        this.setVar("displayIntel",                     this.displayMapIntel);
+        this.setVar("intelChance",                      str(this.mapIntelChance));
+        this.setVar("friendlyIntel",                    this.displayFriendlyIntel);
+        this.setVar("friendlyIntelRadius",              this.friendlyIntelRadius);
+        this.setVar("displayMilitarySectors",           this.displayMilitarySectors);
+        this.setVar("displayTraceGrid",                 this.TRACEGridDisplayLevel);
+        this.setVar("displayPlayerSectors",             this.displayPlayerSectors);
+        this.setVar("runEvery",                         this.intelRefreshRate);
+    }
+
+}

@@ -1,0 +1,34 @@
+class ALiVE_mil_opcom : Module {
+
+    var debug = false;
+    var controlType = "invasion";
+    var factions = [];
+    var reinforcementsLevel = 0.9;
+    var roadblocksLevel = 1;
+    var persistent = false;
+    var startingAsymmetricOccuptation = -100;
+    var intelDropChance = 0;
+    var maxConcurrentObjectiveAttacks = 10;
+    var minAgentsForRecruitmentHQ = 2;
+
+
+    function constructor() {
+
+    }
+
+    function initialize() {
+        this.ModuleInit("ALiVE_mil_opcom");
+
+        this.setVar("debug",                str(this.debug));
+        this.setVar("persistent",           str(this.persistent));
+        this.setVar("controltype",          this.controlType);
+        this.setVar("asym_occupation",      this.startingAsymmetricOccuptation);
+        this.setVar("roadblocks",           this.roadblocksLevel);
+        this.setVar("reinforcements",       str(this.reinforcementsLevel));
+        this.setVar("intelchance",          this.intelDropChance);
+        this.setVar("factions",             ALiVE_arrayToStringList(this.factions));
+        this.setVar("simultanObjectives",   this.maxConcurrentObjectiveAttacks);
+        this.setVar("minAgents",            this.minAgentsForRecruitmentHQ);
+    }
+
+}

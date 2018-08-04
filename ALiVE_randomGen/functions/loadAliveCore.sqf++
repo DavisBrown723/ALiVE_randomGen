@@ -1,0 +1,17 @@
+var _requiredModule = new ALiVE_Required();
+_requiredModule.debug = ALiVE_randomGen_debugEnabled;
+
+var _virtualAISystem = new ALiVE_sys_profile();
+_virtualAISystem.debug = ALiVE_randomGen_debugEnabled;
+_virtualAISystem.spawnRadiusInfantry = 1000;
+
+_requiredModule.initialize();
+_virtualAISystem.initialize();
+
+waituntil(function() {
+    !isnil("ALiVE_REQUIRE_INITIALISED");
+});
+
+waituntil(function() {
+    !(isnil("ALiVE_profileSystemInit"));
+});
