@@ -181,7 +181,7 @@ translateNode = {
             private _condition = _node select 1;
             private _block = _node select 2;
 
-            private _code = format ["scopename 'sqf_pp_nearestLoopScope';while {%1} do {%2};", _condition call translateNode, _block call translateNode];
+            private _code = format ["while {%1} do {%2};", _condition call translateNode, _block call translateNode];
 
             _code breakout "translateNode";
         };
@@ -193,8 +193,11 @@ translateNode = {
             private _block = _node select 4;
 
             private _code = format [
-                "%1 scopename 'sqf_pp_nearestLoopScope';while {%2} do {%3%4};",
-                _pre call translateNode, _condition call translateNode, _block call translateNode, _post call translateNode
+                "%1 while {%2} do {%3%4};",
+                _pre call translateNode,
+                _condition call translateNode,
+                _block call translateNode,
+                _post call translateNode
             ];
 
             _code breakout "translateNode";
@@ -206,7 +209,7 @@ translateNode = {
             private _block = _node select 3;
 
             private _code = format [
-                "scopename 'sqf_pp_nearestLoopScope'; {private %1 = _x;%2} foreach %3;",
+                "{private %1 = _x;%2} foreach %3;",
                 _enumerableVar call translateNode, _block call translateNode, _list call translateNode
             ];
 
@@ -217,7 +220,7 @@ translateNode = {
             private _condition = _node select 1;
             private _cases = _node select 2;
 
-            private _code = format ["scopename 'sqf_pp_nearestLoopScope'; switch (%1) do {", _condition call translateNode];
+            private _code = format ["switch (%1) do {", _condition call translateNode];
 
             {
                 _x params ["_caseCondition","_caseBlock"];
@@ -310,7 +313,7 @@ translateNode = {
             private _parameterString = _parameters call parameterListToString;
             private _paramsString = if (_parameterString == "") then {""} else {format ["params [%1];", _parameterString]};
 
-            private _code = format ["{scopename 'sqf_pp_function_scope'; _this call {%1 %2}}", _paramsString, _body call translateNode];
+            private _code = format ["{scopename 'sqf_pp_function_scope'; %1 %2}", _paramsString, _body call translateNode];
             _code breakout "translateNode";
         };
 
@@ -341,7 +344,7 @@ translateNode = {
             private _parameterString = _parameters call parameterListToString;
             private _paramsString = if (_parameterString == "") then {""} else {format ["params [%1];", _parameterString]};
 
-            private _code = format ["%1 = {scopename 'sqf_pp_function_scope'; _this call {%2 %3}};", _function, _paramsString, _body call translateNode];
+            private _code = format ["%1 = {scopename 'sqf_pp_function_scope'; %2 %3};", _function, _paramsString, _body call translateNode];
             _code breakout "translateNode";
         };
 
@@ -386,7 +389,7 @@ translateNode = {
                 private _parameterString = _parameters call parameterListToString;
                 private _paramsString = if (_parameterString == "") then {""} else {format ["params [%1];", _parameterString]};
 
-                _code = _code + (format ["_classMethods pushback ['%1',{scopename 'sqf_pp_function_scope';%2 %3}];", _name, _paramsString, _body call translateNode]);
+                _code = _code + (format ["_classMethods pushback ['%1',{scopename 'sqf_pp_function_scope'; %2 %3}];", _name, _paramsString, _body call translateNode]);
             } foreach _functions;
 
             _code = _code + "[_classname,_parents,_classVariables,_classMethods] call soop_fnc_defineClass";
@@ -428,7 +431,7 @@ generateCode = {
 
     // wrap code in scope
     // to prevent 'return' from breaking other functions
-    _code = format ["scopename 'sqf_pp_function_scope'; _this call {%1}", _code];
+    _code = format ["scopename 'sqf_pp_function_scope'; %1;", _code];
 
     if (_compile) then {
         compile _code
