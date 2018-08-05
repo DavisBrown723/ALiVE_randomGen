@@ -369,50 +369,12 @@ parseUnaryOperation = {
         private _operator = CURR_TOKEN select 1;
         CONSUME();
 
-        switch (_operator) do {
-            case "--";
-            case "++": {
-                private "_unaryNode";
-
-                if (ACCEPT_TYPE("identifier")) then {
-                    // pre increment
-
-                    private _identifier = CURR_TOKEN;
-
-                    CONSUME();
-
-                    private _unaryNode = [_operator,_identifier] call unaryOperationNode;
-                    _preStatementNodeList pushback _unaryNode;
-                } else {
-                    // post increment
-                    // backtrack to identifier
-
-                    BACKTRACK();
-                    BACKTRACK();
-
-                    private _identifier = CURR_TOKEN;
-
-                    CONSUME();
-                    CONSUME();
-
-                    private _unaryNode = [_operator,_identifier] call unaryOperationNode;
-                    _postStatementNodeList pushback _unaryNode;
-                };
-
-                // dummy node for the sake of returning a value
-                private _dummyNode = ["",""] call unaryOperationNode;
-                _dummyNode breakout "parseUnaryOperation";
-            };
-
-            default {
-                private _expressionNode = [] call parseExpression;
-                if (!isnil "_expressionNode") then {
-                    private _unaryNode = [_operator,_expressionNode] call unaryOperationNode;
-                    _unaryNode breakout "parseUnaryOperation";
-                } else {
-                    hint "ERROR";
-                };
-            };
+        private _expressionNode = [] call parseExpression;
+        if (!isnil "_expressionNode") then {
+            private _unaryNode = [_operator,_expressionNode] call unaryOperationNode;
+            _unaryNode breakout "parseUnaryOperation";
+        } else {
+            hint "ERROR";
         };
     };
 

@@ -15,7 +15,7 @@ assignmentOperators = ["=","+=","-=","*=","/=","%="];
 singleCharOperators = [ "=",  "!" , "+" , "-" , "*" , "/" , "%" , ">" , "<" , "." ];
 doubleCharOperators = [ "+=","-","*=","/=","%=",  "<=",">=","==","!=","&&","||","++","--"];
 
-unaryOperators = ["!","++","--"];
+unaryOperators = ["!","-"];
 binaryOperators = singleCharOperators + doubleCharOperators - unaryOperators;
 
 identifierStartChars = letters + ["_"];
